@@ -11,17 +11,36 @@
 const char Source[] ="Source/source.txt";
 const char Output[] ="Build/sorted.txt";
 
-int main (void){
+int main (const int argc, const char *argv[]){
 
     char *Buffer = NULL;
-    size_t lenbuf = BaseRead(Source, &Buffer);
+    size_t lenbuf = BaseRead (Source, &Buffer);
 
     Line *text = NULL;
-    size_t size = StrToPoint(Buffer, lenbuf, &text);
+    size_t size = StrToPoint (Buffer, lenbuf, &text);
 
-    StrSorter(text, size, sizeof(Line), revcmpstr);
+    struct Flags ConsoleFlags = {0, 0, 0, 0};
 
-    PrintToFile(Output, text, size);
+    struct OneginContent Content{
+        Buffer,
+        lenbuf,
+        text,
+        size,
+        sizeof(Line),
+        NULL,
+        Output,
+        fopen (Output, "w"),
+    };
+
+    if (argc != 1) {
+        CheckInputFlags (argv, argc, &ConsoleFlags, Content);
+    }
+    else {
+        return OneginSort (Content, cmpstr);
+    }
+    return 0;
+
+    //PrintToFile(Output, text, size);
 }
 
 

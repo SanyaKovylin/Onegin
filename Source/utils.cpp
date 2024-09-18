@@ -3,14 +3,21 @@
 #include <string.h>
 #include <ctype.h>
 
-
 #include "utils.h"
+#include "myio.h"
+#include "unisorter.h"
+
+int OneginSort (OneginContent Content, int (*cmpfunc)(void *elem1, void *elem2)){
+
+    StrSorter (Content.text, Content.length, Content.elsize, cmpfunc);
+    PrintToFile (Content.output, Content.text, Content.length, Content.fwrite);
+    return 0;
+}
 
 int StrSort(struct Line **txt, size_t len, rev needreverse){
 
     size_t left = 0;
     size_t right = len - 1;
-
     char *midelem = (char*) calloc (100, sizeof (char));
     strcpy (midelem, (*txt)[(left + right) / 2].start + 1);
 
@@ -44,19 +51,19 @@ int StrSort(struct Line **txt, size_t len, rev needreverse){
 
     if (right > 0) {
 
-        StrSort(txt, right + 1, needreverse);
+        StrSort (txt, right + 1, needreverse);
     }
 
     if (left < len - 1) {
 
         Line *txt1 = (*txt + left);
-        StrSort(&txt1, len-left, needreverse);
+        StrSort (&txt1, len-left, needreverse);
     }
 
     return 1;
 }
 
-equality mystrcmp( const Line *line, const char *midelem, const rev needreverse){
+equality mystrcmp (const Line *line, const char *midelem, const rev needreverse){
 
     int elem1 = 0;
     int elem2 = 0;
@@ -81,12 +88,12 @@ equality mystrcmp( const Line *line, const char *midelem, const rev needreverse)
         }
     }
     else {
-        strcpy(src1, line->start + 1);
-        strcpy(src2,         midelem);
+        strcpy (src1, line->start + 1);
+        strcpy (src2,         midelem);
     }
 
-    for (;!isalpha(src1[elem1]); elem1++);
-    for (;!isalpha(src2[elem2]); elem2++);
+    for (;!isalpha (src1[elem1]); elem1++);
+    for (;!isalpha (src2[elem2]); elem2++);
 
     while (src1[elem1] == src2[elem2]  && src1[elem1] != '\0'
                                        && src2[elem2] != '\0') {
@@ -125,12 +132,12 @@ equality mystrcmp( const Line *line, const char *midelem, const rev needreverse)
         }
     }
 
-    free(src1);
-    free(src2);
+    free (src1);
+    free (src2);
     return ans;
 }
 
-int cmpstr(void* el1, void* el2){
+int cmpstr (void* el1, void* el2){
 
     int elem1 = 0;
     int elem2 = 0;
@@ -144,11 +151,11 @@ int cmpstr(void* el1, void* el2){
     char *src1 = (char*) calloc (len1, sizeof (char));
     char *src2 = (char*) calloc (len2, sizeof (char));
 
-    strcpy(src1, line1->start + 1);
-    strcpy(src2, line2->start + 1);
+    strcpy (src1, line1->start + 1);
+    strcpy (src2, line2->start + 1);
 
-    for (;!isalpha(src1[elem1]); elem1++);
-    for (;!isalpha(src2[elem2]); elem2++);
+    for (;!isalpha (src1[elem1]); elem1++);
+    for (;!isalpha (src2[elem2]); elem2++);
 
     while (src1[elem1] == src2[elem2]  && src1[elem1] != '\0'
                                        && src2[elem2] != '\0') {
@@ -186,8 +193,8 @@ int cmpstr(void* el1, void* el2){
             }
         }
     }
-    free(src1);
-    free(src2);
+    free (src1);
+    free (src2);
     return ans;
 }
 
@@ -214,8 +221,8 @@ int revcmpstr(void* el1, void* el2){
     }
 
 
-    for (;!isalpha(src1[elem1]); elem1++);
-    for (;!isalpha(src2[elem2]); elem2++);
+    for (;!isalpha (src1[elem1]); elem1++);
+    for (;!isalpha (src2[elem2]); elem2++);
 
     while (src1[elem1] == src2[elem2]  && src1[elem1] != '\0'
                                        && src2[elem2] != '\0') {
@@ -253,7 +260,7 @@ int revcmpstr(void* el1, void* el2){
             }
         }
     }
-    free(src1);
-    free(src2);
+    free (src1);
+    free (src2);
     return ans;
 }

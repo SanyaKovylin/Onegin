@@ -11,7 +11,7 @@ H = $(wildcard *.h)
 
 Build = Build
 Source = Source
-Exe = Solver.exe
+Exe = Onegin.exe
 
 all: $(Build)/$(Exe)
 
