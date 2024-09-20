@@ -6,21 +6,17 @@
 
 #include "unisorter.h"
 #include "utils.h"
-
-union pointer {
-        void *ub;
-        uint64_t count;
-};
-
-equality mystrcmp (const Line *line, const char *midelem, const rev needreverse);
-
-int swap (void* p1, void* p2, size_t size);
+#include "memswap.h"
 
 int StrSorter (void *data,   size_t len,   size_t elsize,
-                        int (*cmpfunc)(void *elem1, void *elem2)){
+                        int (*cmpfunc)(void *elem1, void *elem2))
+{
 
     #define POINTER(x) (void *) (((char*) data) + elsize*(x))
-    #define POINT(x) (((char*) data) + elsize*(x))
+
+    assert (data    != NULL);
+    assert (cmpfunc != NULL);
+
     size_t left = 0;
     size_t right = len - 1;
 
@@ -34,7 +30,7 @@ int StrSorter (void *data,   size_t len,   size_t elsize,
         case 2: {
             if (cmpfunc (POINTER(0), POINTER(1)) > 0) {
 
-                if (!swap (POINTER(0), POINTER(1), elsize)) assert (0);
+                memswap (POINTER(0), POINTER(1), elsize);
             }
             return 1;
         }
@@ -62,7 +58,7 @@ int StrSorter (void *data,   size_t len,   size_t elsize,
                 middle = left;
             }
 
-            if (!swap (POINTER(left), POINTER(right), elsize)) assert(0);
+            memswap (POINTER(left), POINTER(right), elsize);
 
             if (right > 0) {
                 right--;
@@ -79,22 +75,9 @@ int StrSorter (void *data,   size_t len,   size_t elsize,
 
     if (left < len - 1) {
 
-        StrSorter (POINTER (left), len-left, elsize ,cmpfunc);
+        StrSorter (POINTER(left), len-left, elsize ,cmpfunc);
     }
 
-    return 1;
+    return 0;
     #undef POINTER
-}
-
-int swap (void* p1, void* p2, size_t size){
-
-    void *buffer = (void*) calloc (size, 1);
-
-    memcpy (buffer, p1,size);
-    memcpy (p1, p2, size);
-    memcpy (p2, buffer, size);
-
-    free (buffer);
-
-    return 1;
 }

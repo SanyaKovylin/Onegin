@@ -3,141 +3,41 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "utils.h"
 #include "myio.h"
 #include "unisorter.h"
 
-int OneginSort (OneginContent Content, int (*cmpfunc)(void *elem1, void *elem2)){
+int OneginSort (OneginContent Content, Sorts *order, size_t numsorts){
 
-    StrSorter (Content.text, Content.length, Content.elsize, cmpfunc);
-    PrintToFile (Content.output, Content.text, Content.length, Content.fwrite);
+    for (size_t i = 0; i < numsorts; i++) {
+        switch (order[i]) {
+
+            case REVERSE: {
+                StrSorter (Content.text, Content.length, Content.elsize, revcmpstr);
+                PrintToFile (Content.output, Content.text, Content.length, Content.fwrite);
+                break;
+            }
+
+            case STRAIGHT: {
+                StrSorter (Content.text, Content.length, Content.elsize, cmpstr);
+                PrintToFile (Content.output, Content.text, Content.length, Content.fwrite);
+                break;
+            }
+
+            case ORIGIN: {
+                PrintOrigin(Content);
+                break;
+            }
+
+            default: return 1;
+        }
+    }
     return 0;
 }
 
-int StrSort(struct Line **txt, size_t len, rev needreverse){
-
-    size_t left = 0;
-    size_t right = len - 1;
-    char *midelem = (char*) calloc (100, sizeof (char));
-    strcpy (midelem, (*txt)[(left + right) / 2].start + 1);
-
-    struct Line buffer = {};
-
-    while (left < right) {
-
-        while (mystrcmp (&((*txt)[left]), midelem, needreverse) == LOWER) {
-
-            left++;
-        }
-
-        while ((mystrcmp (&(*txt)[right], midelem, needreverse) == HIGHER) && right > 0) {
-            right--;
-        }
-
-        if (left <= right) {
-
-            buffer = (*txt)[left];
-            (*txt)[left] = (*txt)[right];
-            (*txt)[right] = buffer;
-
-            if (right > 0) {
-                right--;
-            }
-
-            left++;
-        }
-
-    }
-
-    if (right > 0) {
-
-        StrSort (txt, right + 1, needreverse);
-    }
-
-    if (left < len - 1) {
-
-        Line *txt1 = (*txt + left);
-        StrSort (&txt1, len-left, needreverse);
-    }
-
-    return 1;
-}
-
-equality mystrcmp (const Line *line, const char *midelem, const rev needreverse){
-
-    int elem1 = 0;
-    int elem2 = 0;
-
-    size_t len = line->length;
-    size_t len1 = strlen (midelem);
-
-    char *src1 = (char*) calloc ( len, sizeof (char));
-    char *src2 = (char*) calloc (len1 + 2, sizeof (char));
-
-
-    if (needreverse) {
-
-        for (size_t i = 0; i < len; i++) {
-
-            src1[i] = line->start[len - i - 1];
-        }
-
-        for (size_t i = 0; i < len1; i++) {
-
-            src2[i] = midelem[len1 - i - 1];
-        }
-    }
-    else {
-        strcpy (src1, line->start + 1);
-        strcpy (src2,         midelem);
-    }
-
-    for (;!isalpha (src1[elem1]); elem1++);
-    for (;!isalpha (src2[elem2]); elem2++);
-
-    while (src1[elem1] == src2[elem2]  && src1[elem1] != '\0'
-                                       && src2[elem2] != '\0') {
-
-        elem1++;
-        elem2++;
-    }
-
-    equality ans = ER;
-
-    if (src1[elem1] == '\0') {
-
-        if (src2[elem2] == '\0') {
-
-            ans = EQUAL;
-        }
-        else {
-
-            ans = LOWER;
-        }
-    }
-    else {
-        if (src2[elem2] == '\0') {
-
-            ans = HIGHER;
-        }
-        else {
-            if (src1[elem1] > src2[elem2]) {
-
-                ans = HIGHER;
-            }
-            else {
-
-                ans = LOWER;
-            }
-        }
-    }
-
-    free (src1);
-    free (src2);
-    return ans;
-}
-
 int cmpstr (void* el1, void* el2){
+
+    assert (el1 != NULL);
+    assert (el2 != NULL);
 
     int elem1 = 0;
     int elem2 = 0;
@@ -199,6 +99,9 @@ int cmpstr (void* el1, void* el2){
 }
 
 int revcmpstr(void* el1, void* el2){
+
+    assert (el1 != NULL);
+    assert (el2 != NULL);
 
     int elem1 = 0;
     int elem2 = 0;
@@ -263,4 +166,18 @@ int revcmpstr(void* el1, void* el2){
     free (src1);
     free (src2);
     return ans;
+}
+
+bool CompStr (const char *Line1, const char *Line2){
+
+    assert (Line1 != NULL);
+    assert (Line2 != NULL);
+
+    int Position = 0;
+    for (; Line1[Position] != '\0' && Line2[Position] != '\0'
+                                   && Line1[Position] == Line2[Position]; Position++)
+        ;
+
+    return Line1[Position] == '\0' && Line2[Position] == '\0';
+
 }

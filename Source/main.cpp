@@ -4,40 +4,44 @@
 #include <assert.h>
 #include <fcntl.h>
 
-#include "unisorter.h"
+#include "console.h"
 #include "myio.h"
-#include "utils.h"
 
 const char Source[] ="Source/source.txt";
 const char Output[] ="Build/sorted.txt";
 
 int main (const int argc, const char *argv[]){
 
-    char *Buffer = NULL;
-    size_t lenbuf = BaseRead (Source, &Buffer);
+    char *buffer = NULL;
+    size_t lenbuf = BaseRead (Source, &buffer);
 
     Line *text = NULL;
-    size_t size = StrToPoint (Buffer, lenbuf, &text);
+    size_t size = StrToPoint (buffer, &lenbuf, &text); // создать Line* CreatLine, StrToLine
 
-    struct Flags ConsoleFlags = {0, 0, 0, 0};
-
-    struct OneginContent Content{
-        Buffer,
-        lenbuf,
-        text,
-        size,
-        sizeof(Line),
-        NULL,
-        Output,
-        fopen (Output, "w"),
+    FlagStates States {
+        .order    = {},
+        .pointer  =  0,
+        .needhelp =  0,
     };
 
-    if (argc != 1) {
-        CheckInputFlags (argv, argc, &ConsoleFlags, Content);
-    }
-    else {
-        return OneginSort (Content, cmpstr);
-    }
+    struct OneginContent Content{
+        .buffer = buffer,
+        .lenbuf = lenbuf,
+        .text   = text,
+        .length = size,
+        .elsize = sizeof(Line),
+        .cmpfunc = NULL,
+        .output = Output,
+        .fwrite = fopen (Output, "w"),
+    };
+
+    CheckInputFlags (argv, argc, &States);
+    // Я ХОЧУ: чтобы функция которая называется CheckInputFlags
+    //         проверяла флаги и не больше
+    // Я ХОЧУ: функцию, в которую я передам "настройки" (consoleFlags) и она мне сделает
+
+    OneginSort (Content, States.order, States.pointer);
+
     return 0;
 
     //PrintToFile(Output, text, size);

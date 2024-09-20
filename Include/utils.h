@@ -1,18 +1,17 @@
 #ifndef UTILS_H_INCLUDED
 #define UTILS_H_INCLUDED
 
-
+enum Sorts {
+    REVERSE  = 1,
+    STRAIGHT = 2,
+    ORIGIN   = 3,
+};
 
 enum equality {
     EQUAL  =  0,
     LOWER  = -1,
     HIGHER =  1,
     ER   = 1000,
-};
-
-enum rev {
-    STRAIGHT = 0,
-    REVERSE  = 1,
 };
 
 struct Line {
@@ -32,10 +31,11 @@ struct OneginContent {
     FILE* fwrite;
 };
 
-int OneginSort (OneginContent Content, int (*cmpfunc)(void *elem1, void *elem2));
+int OneginSort (OneginContent Content, Sorts *order, size_t numsorts);
 
-equality mystrcmp (const Line *line, const char *s1, rev needreverce);
-int StrSort (struct Line **txt, size_t len, rev needreverce);
+equality mystrcmp (const Line *line, const char *s1, Sorts needreverce);
+int StrSort (struct Line **txt, size_t len, Sorts needreverce);
 int cmpstr (void* el1, void* el2);
 int revcmpstr (void* el1, void* el2);
+bool CompStr (const char *Line1, const char *Line2);
 #endif //UTILS_H_INCLUDED
