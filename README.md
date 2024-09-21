@@ -10,16 +10,21 @@ You can find some ones you can use in your projects. Such as:
 
 unisorter.cpp:
 
->StrSorter which is actually a qsort function prototype. So you can use it an mosify.
+>"StrSorter" which is actually a qsort function prototype. So you can use it an mosify.
 >
->memswap  which is vectorized memory swap of any type variable.
+>"memswap"  which is vectorized memory swap of any type variable.
  
 utils.cpp:
 
->cmpstr which is a string comparator by void pointers
+>"cmpstr" which is a string comparator by void pointers
 >
->revcmpstr which is a string comparator fro the end
+>"revcmpstr" which is a string comparator fro the end
 
 They both ignore the previous and the following syntax marks
 
+# Meow!!!
 
+![Meow](https://i.pinimg.com/736x/1f/c2/93/1fc293fdf8f191e4ff6af2165187e220.jpg)
+
+
+## by Sanya Kovylin
